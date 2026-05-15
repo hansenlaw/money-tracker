@@ -1,0 +1,17 @@
+# Dependency utama FastAPI — web framework modern untuk Python
+fastapi==0.115.12
+
+# ASGI server — menjalankan FastAPI di production (dipakai di Procfile)
+# [standard] = include extras: websockets, httptools, dll
+uvicorn[standard]==0.34.2
+
+# Driver PostgreSQL untuk Python — untuk koneksi ke Supabase
+# psycopg2-binary = versi pre-compiled, tidak butuh build dari source
+psycopg2-binary==2.9.10
+
+# Validasi data & serialisasi (dependency utama FastAPI)
+pydantic==2.11.4
+
+# Baca file .env saat development lokal
+# Di Railway, env var diset langsung di dashboard — package ini tetap dibutuhkan tapi tidak berbahaya
+python-dotenv==1.1.0

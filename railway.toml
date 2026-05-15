@@ -1,0 +1,30 @@
+# railway.toml — Konfigurasi build & deploy untuk Railway
+# File ini memberitahu Railway cara build dan run app kita.
+# Tanpa file ini, Railway pakai railpack auto-detection yang mencoba
+# inject secret "postgresql" karena detect psycopg2 di requirements.txt —
+# padahal kita pakai Supabase (koneksi via DATABASE_URL), bukan Railway PostgreSQL.
+
+[build]
+# Gunakan Nixpacks sebagai builder, bukan Railpack.
+# Railpack (builder baru Railway) auto-detect psycopg2 → paksa inject secret postgresql.
+# Nixpacks tidak melakukan auto-inject itu — lebih predictable.
+builder = "nixpacks"
+
+# Pin Python ke 3.12 agar kompatibel dengan semua dependency.
+# Python 3.13 (default Railway terbaru) belum support pydantic versi lama.
+[build.nixpacksPlan.phases.setup]
+nixPkgs = ["python312", "python312Packages.pip"]
+
+[deploy]
+# Perintah untuk start server.
+# $PORT di-inject Railway secara otomatis saat runtime.
+# --host 0.0.0.0 wajib agar server bisa diakses dari luar container.
+startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
+
+# Healthcheck: Railway akan ping "/" setiap 30 detik untuk cek server hidup.
+# Jika gagal 3x berturut-turut → Railway restart otomatis.
+healthcheckPath = "/"
+healthcheckTimeout = 30
+
+# Jumlah instance (1 = cukup untuk personal use, free tier)
+numReplicas = 1
